@@ -12,7 +12,7 @@ import java.lang { Thread { sleep } }
 
 DateFormat dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-class Handler() satisfies HttpHandler {
+shared class Handler() satisfies HttpHandler {
 
 	String? getActualResponse(String? queryValue) {
 		if (is String queryValue) {
