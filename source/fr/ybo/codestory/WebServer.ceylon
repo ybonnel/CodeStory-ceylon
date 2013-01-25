@@ -1,7 +1,8 @@
 
 import com.sun.net.httpserver { HttpServer { createHttpServer=create }, HttpHandler, HttpExchange, Headers }
 import java.net { InetSocketAddress,
-    HttpURLConnection { httpOk= \iHTTP_OK }
+    HttpURLConnection { httpOk= \iHTTP_OK, httpBadRequest=\iHTTP_BAD_REQUEST },
+	URLDecoder { urlDecode = decode }
 }
 import java.io { OutputStream }
 import ceylon.interop.java { javaString }
@@ -13,10 +14,29 @@ DateFormat dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 class Handler() satisfies HttpHandler {
 
+	String? getActualResponse(String? queryValue) {
+		if (is String queryValue) {
+			for (fixResponse in fixResponses) {
+				if (fixResponse.key == urlDecode(queryValue)) {
+					return fixResponse.item;
+				}
+			}
+		}
+		return null;
+	}
+
 
 	shared actual void handle(HttpExchange httpExchange) {
 		logRequest(httpExchange);
-		sendResponse(httpExchange, "ybonnel@gmail.com");
+		String? query = httpExchange.requestURI.rawQuery;
+		if (is String query) {
+			String? response = getActualResponse(query.split("=").last);
+			if (is String response) {
+				sendResponse(httpExchange, response);
+				return;
+			}
+		}
+		sendResponse(httpExchange, "I can't response to your query", httpBadRequest);
 	}
 
 	void sendResponse(HttpExchange httpExchange, String response, Integer status = httpOk) {
