@@ -1,8 +1,3 @@
-import com.meterware.httpunit {
-	WebConversation,
-	WebResponse,
-	WebClient
-}
 import com.sun.net.httpserver { HttpServer { createHttpServer=create } }
 import java.net { InetSocketAddress }
 import fr.ybo.codestory { Handler }
