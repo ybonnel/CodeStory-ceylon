@@ -1,7 +1,7 @@
 
 import com.sun.net.httpserver { HttpServer { createHttpServer=create }, HttpHandler, HttpExchange, Headers }
 import java.net { InetSocketAddress,
-    HttpURLConnection { httpOk= \iHTTP_OK, httpBadRequest=\iHTTP_BAD_REQUEST },
+    HttpURLConnection { httpOk= \iHTTP_OK, httpBadRequest=\iHTTP_BAD_REQUEST, httpCreated=\iHTTP_CREATED },
 	URLDecoder { urlDecode = decode }
 }
 import java.io { OutputStream }
@@ -25,18 +25,44 @@ shared class Handler() satisfies HttpHandler {
 		return null;
 	}
 
+	class Response(String paramResponse, Integer paramStatus = httpOk) {
+		shared String response = paramResponse;
+		shared Integer status = paramStatus;
+	}
+
+	Response? handleQuery(String? query) {
+		if (is String query) {
+			String? response = getActualResponse(query.split("=").last);
+			if (is String response) {
+				return Response(response);
+			}
+		}
+		return null;
+	}
+
+	Response? handleEnonce(String path) {
+		if (path.startsWith("/enonce/")) {
+			return Response("OK", httpCreated);
+		}
+		return null;
+	}
+
 
 	shared actual void handle(HttpExchange httpExchange) {
 		logRequest(httpExchange);
 		String? query = httpExchange.requestURI.rawQuery;
-		if (is String query) {
-			String? response = getActualResponse(query.split("=").last);
-			if (is String response) {
-				sendResponse(httpExchange, response);
-				return;
-			}
+		Response? response = handleQuery(query);
+		if (is Response response) {
+			sendResponse(httpExchange, response.response, response.status);
+			return;
 		}
-		sendResponse(httpExchange, "I can't response to your query", httpBadRequest);
+		Response? responseEnonce = handleEnonce(httpExchange.requestURI.path);
+		if (is Response responseEnonce) {
+			sendResponse(httpExchange, responseEnonce.response, responseEnonce.status);
+			return;
+		} else {
+			sendResponse(httpExchange, "I can't response to your query", httpBadRequest);
+		}
 	}
 
 	void sendResponse(HttpExchange httpExchange, String response, Integer status = httpOk) {
