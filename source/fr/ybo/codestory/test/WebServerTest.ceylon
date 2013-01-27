@@ -26,13 +26,24 @@ void stopServer() {
 }
 
 class WebServerTest() {
+	
+	value url = "http://localhost:9090/?q=";
+	
+	value expectedResponses = {
+		url + "Quelle est ton adresse email" -> "ybonnel@gmail.com",
+		url + "Es tu abonne a la mailing list(OUI/NON)" -> "OUI",
+		url + "Es tu heureux de participer(OUI/NON)" -> "OUI",
+		url + "Es tu pret a recevoir une enonce au format markdown par http post(OUI/NON)" -> "OUI",
+		url + "Est ce que tu reponds toujours oui(OUI/NON)" -> "NON"	}; 
 
-	shared void should_answer_to_whatsyourmail() {
-		URI uri = parseURI("http://localhost:9090/?q=Quelle est ton adresse email");
-	     Request request = uri.get();
-	     Response response = request.execute();
-		 assertEquals(200, response.status);
-	     assertEquals("ybonnel@gmail.com", response.contents);
+	shared void should_answer_to_expectedResponses() {
+		for (expectedResponse in expectedResponses) {
+			URI uri = parseURI(expectedResponse.key);
+		    Request request = uri.get();
+		    Response response = request.execute();
+			assertEquals(200, response.status);
+		    assertEquals(expectedResponse.item, response.contents);
+		}
 	}
 }
 
@@ -47,7 +58,7 @@ void runATest(void test()) {
 void run() {
 	startServer();
 	WebServerTest test = WebServerTest();
-	runATest(test.should_answer_to_whatsyourmail);
+	runATest(test.should_answer_to_expectedResponses);
 	stopServer();
 }
 
