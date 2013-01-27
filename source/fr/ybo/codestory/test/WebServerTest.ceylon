@@ -5,7 +5,6 @@ import org.junit { Assert { assertEquals } }
 import ceylon.net.uri { parseURI, URI }
 import ceylon.net.http { Request, Response }
 import java.lang { AssertionError }
-import com.meterware.httpunit { WebConversation }
 
 variable HttpServer? server := null; 
 

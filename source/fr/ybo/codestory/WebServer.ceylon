@@ -40,7 +40,11 @@ shared class Handler() satisfies HttpHandler {
 		return null;
 	}
 
-	Response? handleEnonce(String path) {
+	Response? handlePath(String path) {
+		if (path.startsWith("/scalaskel/change/")) {
+			Integer? change = parseInteger(path.split("/").last else "0");
+			return Response(toJson(Scalaskel().calculate(change else 0)));
+		}
 		if (path.startsWith("/enonce/")) {
 			return Response("OK", httpCreated);
 		}
@@ -56,7 +60,7 @@ shared class Handler() satisfies HttpHandler {
 			sendResponse(httpExchange, response.response, response.status);
 			return;
 		}
-		Response? responseEnonce = handleEnonce(httpExchange.requestURI.path);
+		Response? responseEnonce = handlePath(httpExchange.requestURI.path);
 		if (is Response responseEnonce) {
 			sendResponse(httpExchange, responseEnonce.response, responseEnonce.status);
 			return;
