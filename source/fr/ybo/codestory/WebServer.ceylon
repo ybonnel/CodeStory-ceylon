@@ -112,11 +112,11 @@ shared class Handler() satisfies HttpHandler {
 
 	void logRequest(HttpExchange exchange, String payload) {
 		print("" dateFormat.format(Date()) ":" exchange.requestMethod ":" exchange.requestURI.string "");
-		print(payload);
+		print(payload.segment(0, 4000));
 	}
 
 	void logResponse(String response, Integer status) {
-		print("" dateFormat.format(Date()) ":" status ":" response "");
+		print("" dateFormat.format(Date()) ":" status ":" response.segment(0, 4000) "");
 	}
 }
 

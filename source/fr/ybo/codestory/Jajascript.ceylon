@@ -54,7 +54,7 @@ shared String getJajascriptResponse(String payload) {
 	
 	LinkedList<Flight> flights = LinkedList<Flight>();
 	Pattern patternArray = compile("\\[(.*)\\].*");
-    Pattern patternCommande = compile("\\{ ?\"VOL\" ?\\: ?\"([\\w\\-]+)\" ?, ?\"DEPART\" ?\\: ?(\\d+) ?, ?\"DUREE\" ?\\: ?(\\d+) ?, ?\"PRIX\" ?\\: ?(\\d+) ?\\}");
+    Pattern patternCommande = compile("\\{ ?\"VOL\" ?\\: ?\"([\\w\\-\\*]+)\" ?, ?\"DEPART\" ?\\: ?(\\d+) ?, ?\"DUREE\" ?\\: ?(\\d+) ?, ?\"PRIX\" ?\\: ?(\\d+) ?\\}");
     Matcher matcher = patternArray.matcher(javaString(payload));
      
      if (matcher.matches()) {
@@ -90,8 +90,8 @@ shared class Jajascript(LinkedList<Flight> flightsIn) {
 		variable Integer index := 0;
 		for (Flight flight in flights) {
 			variable Solution? bestSolution := null;
-			variable Integer bestPrice := 0;
-			variable Integer bestPriceWithLowerEnd := 0;
+			variable Integer bestPrice := -1;
+			variable Integer bestPriceWithLowerEnd := -1;
 			
 			for (Solution solution in solutions) {
 				if (flight.startTime >= solution.endTime
