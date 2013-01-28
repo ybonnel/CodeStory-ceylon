@@ -80,7 +80,7 @@ shared class Handler() satisfies HttpHandler {
 	shared actual void handle(HttpExchange httpExchange) {
 		try {
 			String payload = getPayload(httpExchange.requestBody);
-			logRequest(httpExchange);
+			logRequest(httpExchange, payload);
 			String? query = httpExchange.requestURI.rawQuery;
 			Response? response = handleQuery(query);
 			if (is Response response) {
@@ -110,8 +110,9 @@ shared class Handler() satisfies HttpHandler {
 		logResponse(response, status);
 	}
 
-	void logRequest(HttpExchange exchange) {
+	void logRequest(HttpExchange exchange, String payload) {
 		print("" dateFormat.format(Date()) ":" exchange.requestMethod ":" exchange.requestURI.string "");
+		print(payload.segment(0, 4000));
 	}
 
 	void logResponse(String response, Integer status) {
