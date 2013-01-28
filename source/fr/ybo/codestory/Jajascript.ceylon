@@ -1,7 +1,7 @@
 import ceylon.collection { LinkedList }
 import ceylon.language { Integer { compareInt = compare } }
 import java.util { BitSet }
-import java.lang { IllegalAccessException }
+import java.lang { IllegalAccessException, Comparable }
 import java.util.regex { Pattern { compile }, Matcher }
 import ceylon.interop.java { javaString }
 
@@ -24,9 +24,9 @@ shared class Solution(price, endTime, BitSet? acceptedFlightsFrom, Integer fligh
 	acceptedFlights.set(flightIndex);
 }
 
-Comparison? compareFlight(Flight x, Flight y) {
+Comparison compareFlight(Flight x, Flight y) {
 	Integer a = x.startTime;
-	Integer b = x.startTime;
+	Integer b = y.startTime;
 	return a.compare(b);}
 
 shared class JajascriptResponse(Integer gain, LinkedList<String> path) {
@@ -78,8 +78,9 @@ shared String getJajascriptResponse(String payload) {
 	
 	return response.toJson();}
 
-shared class Jajascript(LinkedList<Flight> flights) {
-	flights.sort((Flight x, Flight y) compareFlight(x, y));
+shared class Jajascript(LinkedList<Flight> flightsIn) {
+	
+	Flight[] flights = flightsIn.sort(compareFlight);
 	
 	value solutions = LinkedList<Solution>();
 	
