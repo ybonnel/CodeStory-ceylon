@@ -9,17 +9,24 @@ import ceylon.interop.java { javaString }
 import java.text { SimpleDateFormat, DateFormat }
 import java.util { Date }
 import java.lang { Thread { sleep } }
+import java.util.regex { Pattern { compile } }
 
 DateFormat dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 shared class Handler() satisfies HttpHandler {
 
+	Pattern calculatePattern = compile("[\\(\\)0-9\\+/\\* ,\\-]+");
+
 	String? getActualResponse(String? queryValue) {
 		if (is String queryValue) {
+			String queryDecode = urlDecode(queryValue);
 			for (fixResponse in fixResponses) {
-				if (fixResponse.key == urlDecode(queryValue)) {
+				if (fixResponse.key == queryDecode) {
 					return fixResponse.item;
 				}
+			}
+			if (calculatePattern.matcher(javaString(queryDecode)).matches()) {
+				return Calculate().calculate(queryDecode);
 			}
 		}
 		return null;
