@@ -90,6 +90,7 @@ shared class Jajascript(LinkedList<Flight> flights) {
 		for (Flight flight in flights) {
 			variable Solution? bestSolution := null;
 			variable Integer bestPrice := 0;
+			variable Integer bestPriceWithLowerEnd := 0;
 			
 			for (Solution solution in solutions) {
 				if (flight.startTime >= solution.endTime
@@ -97,12 +98,24 @@ shared class Jajascript(LinkedList<Flight> flights) {
 					bestSolution := solution;
 					bestPrice := solution.price;
 				}
+				if (solution.endTime < flight.startTime
+					&& bestPriceWithLowerEnd < solution.price) {
+					bestPriceWithLowerEnd := solution.price;
+				}
 			}
 			
 			Integer newPrice = (bestSolution?.price else 0) + flight.price;
 			
 			Solution newSolution = Solution(newPrice, flight.startTime + flight.duration, bestSolution?.acceptedFlights, index);
 			solutions.add(newSolution);
+			
+			Solution? oldSolution = solutions.first;
+			if (is Solution oldSolution) {
+				if (oldSolution.price < bestPriceWithLowerEnd) {
+					solutions.remove(0);
+				}
+			}
+			
 			
 			index++;
 		}

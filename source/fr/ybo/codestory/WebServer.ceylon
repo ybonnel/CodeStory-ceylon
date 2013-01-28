@@ -115,7 +115,7 @@ shared class Handler() satisfies HttpHandler {
 	}
 
 	void logResponse(String response, Integer status) {
-		print("" dateFormat.format(Date()) ":" status ":" response "");
+		print("" dateFormat.format(Date()) ":" status ":" response.segment(0, 4000) "");
 	}
 }
 
